@@ -2,15 +2,34 @@
 
 import os
 
+def isnumeric(s):
+	try:
+		float(s)
+		return True
+	except ValueError:
+		pass
+
 def dzh_to_tdx(file):
 	tdx_lines = []
+	is_number_data = True;
+	
+	with open(file, 'r') as F:
+		for line in F.readlines():
+			if line.startswith('SH') or line.startswith('SZ'):
+				code, value = line.split("\t", 2)
+				if not isnumeric(value):
+					is_number_data = False;
+					break;
 
 	with open(file, 'r') as F:
 		for line in F.readlines():
 			if line.startswith('SH') or line.startswith('SZ'):
 				code, value = line.split("\t", 2)
 				code = '1|' + code[2:] if code.startswith('SH') else '0|' + code[2:]
-				tdx_lines.append(f'{code}||{value}')
+				if is_number_data:
+					tdx_lines.append(f'{code}||{value}')
+				else:
+					tdx_lines.append(f'{code}|{value}')
 				# print(f'{code}||{value}')
 
 	if len(tdx_lines) > 0:
