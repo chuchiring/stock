@@ -1,9 +1,12 @@
 import xlrd
+import time
 from collections import namedtuple
 
 RowData = namedtuple('RowData',
                      ['code', 'name', 'detail', 'info', 'date', 'dummy', 'kb_date', 'kb_last_year', 'kb_this_year',
                       'standard_date', 'standard_increase', 'standard_money'])
+
+ReleaseInfo = namedtuple('ReleaseInfo', ['date', 'info'])
 
 
 def money_to_str(total):
@@ -48,38 +51,45 @@ def main():
 
             # detail
             detail = ''
+            release_date = ''
 
             if stock_obj.standard_date.value:
-                detail = '%s\t%s 中报业绩 %2.f%%, 净利润 %s\n' % (
-                dzh_code, format_cell_datetime(stock_obj.standard_date.value), stock_obj.standard_increase.value,
-                money_to_str(stock_obj.standard_money.value))
+
+                release_date = format_cell_datetime(stock_obj.standard_date.value)
+
+                detail = '%s\t%s 中报业绩 %2.f%%, 净利润 %s\n' % (dzh_code, release_date, stock_obj.standard_increase.value,
+                                                           money_to_str(stock_obj.standard_money.value))
                 print(detail)
 
             elif stock_obj.kb_date.value and stock_obj.kb_this_year.value:
 
+                release_date = format_cell_datetime(stock_obj.kb_date.value)
+
                 if stock_obj.kb_last_year.value:
-                    detail = '%s\t%s 中报业绩快报 净利润增长: %2.f%%, %s元\n' % (dzh_code,
-                                                               format_cell_datetime(stock_obj.kb_date.value),
-                                                               (stock_obj.kb_this_year.value - stock_obj.kb_last_year.value) * 100 / stock_obj.kb_last_year.value,
-                                                                money_to_str(stock_obj.kb_this_year.value))
+                    detail = '%s\t%s 中报业绩快报 净利润增长: %2.f%%, %s元\n' % (dzh_code, release_date,
+                                                                     (stock_obj.kb_this_year.value - stock_obj.kb_last_year.value) * 100 / stock_obj.kb_last_year.value,
+                                                                     money_to_str(stock_obj.kb_this_year.value))
                 else:
-                    detail = '%s\t%s 中报业绩快报 净利润 %s元\n' % (dzh_code,
-                                                               format_cell_datetime(stock_obj.kb_date.value),
-                                                                money_to_str(stock_obj.kb_this_year.value))
+                    detail = '%s\t%s 中报业绩快报 净利润 %s元\n' % (dzh_code, release_date,
+                                                          money_to_str(stock_obj.kb_this_year.value))
                 print(detail)
 
             elif stock_obj.date.value:
-                detail = '%s\t%s 中报业绩%s %s\n' % (dzh_code, format_cell_datetime(stock_obj.date.value), stock_obj.info.value, stock_obj.detail.value)
+
+                release_date = format_cell_datetime(stock_obj.date.value)
+                detail = '%s\t%s 中报业绩预告 %s %s\n' % (dzh_code, release_date, stock_obj.info.value, stock_obj.detail.value)
                 print(detail)
 
             if len(detail) > 0:
-                txt_lines.append(detail)
+                txt_lines.append(ReleaseInfo(time.strptime(release_date, '%Y-%m-%d'), detail))
 
         current_row += 1
 
     # 保存为文本
     with open(dzh_file, 'w') as f:
-        f.writelines(txt_lines)
+        txt_lines.sort(key=lambda x: x[0], reverse=True)
+        for info in txt_lines:
+            f.write(info.info)
 
 
 if __name__ == '__main__':
