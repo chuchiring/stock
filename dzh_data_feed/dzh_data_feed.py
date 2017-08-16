@@ -1,4 +1,4 @@
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from struct import Struct, calcsize
 import os
 from datetime import datetime
@@ -32,16 +32,16 @@ class Stock:
 class StockManager:
 
     def __init__(self, test_code: str=None):
-        self.stocks = {}
+        self.stocks = defaultdict(lambda: None)
         self.stock_headers = []
-        self.test_code = test_code
+        self.test_code = test_code.upper()
 
     @staticmethod
     def read_stock_header(file_stream, market) -> StockHeader:
 
         # stock code
         stock_code = Struct('<10s').unpack_from(file_stream.read(10))[0].decode()[:6]
-        stock_code = f'{stock_code}.{market}'
+        stock_code = f'{market}{stock_code}'
 
         # stock day count
         day_count = Struct('<i').unpack_from(file_stream.read(4))[0]
@@ -128,9 +128,41 @@ class StockManager:
         return True
 
 
+    # load the PWR file for "Exclude Right" info
+    def read_pwr_from_file(self, file_path):
+        with open(file_path, 'rb') as f:
+            # bypass header
+            f.seek(12, 0)
+
+            # define XR_info
+            XR_info = []
+
+            # read stock code
+            while True:
+                raw_data = f.read(16)
+                if not raw_data:
+                    break
+
+                code = Struct('<16s').unpack_from(raw_data)[0].decode()[:8]
+                print(code)
+
+                # now read first date
+                raw_date = f.read(4)
+                while raw_date != '\xff'*4:
+                    print(raw_date)
+                    day = datetime.fromtimestamp(Struct('<i').unpack_from(raw_date)[0])
+                    print(day)
+                    Struct('<4f').unpack_from(f.read(16))
+                    # read next date
+                    raw_date = f.read(4)
+
+                break
+
+
+
 def main():
 
-    test_code = None
+    test_code = 'sh000001'.upper()
 
     # create the reader
     stock_manager = StockManager(test_code)
@@ -141,10 +173,14 @@ def main():
 
     # save csv
     if test_code:
-        stock_manager.stocks[test_code].export_as_csv('r:\\')
+        stock = stock_manager.stocks[test_code]
+        if stock:
+            stock.export_as_csv('r:\\')
     else:
         for _, stock in stock_manager.stocks.items():
             stock.export_as_csv('r:\\dcu\\')
+
+    stock_manager.read_pwr_from_file('d:\\full.PWR')
 
 if __name__ == '__main__':
     main()
