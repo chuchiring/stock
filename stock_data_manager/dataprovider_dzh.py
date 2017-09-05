@@ -129,10 +129,10 @@ class DzhDataProvider(IStockDataProvider):
                 cur_xr_right = tmp_xr_rights.pop() if tmp_xr_rights else None
 
             xr_daylines.append(StockDayLine(dayline.date,
-                                                 round(dayline.open * price_factor+0.001,2),
-                                                 round(dayline.high * price_factor+0.001,2),
-                                                 round(dayline.low * price_factor+0.001,2),
-                                                 round(dayline.close * price_factor+0.001,2),
+                                                 round(dayline.open * price_factor + 0.001,2),
+                                                 round(dayline.high * price_factor + 0.001,2),
+                                                 round(dayline.low * price_factor + 0.001,2),
+                                                 round(dayline.close * price_factor + 0.001,2),
                                                  dayline.vol, dayline.amount))
 
         xr_daylines.sort()
@@ -170,7 +170,8 @@ class DzhDataProvider(IStockDataProvider):
                     # convert unix datetime to python datetime
                     day = datetime.utcfromtimestamp(tmp_date).date()
                     # convert float value
-                    day_line = StockDayLine(day, *[x for x in Struct('<6f').unpack_from(filestream.read(24))])
+                    day_line = StockDayLine(day, *[round(x + 0.001,2) for x in Struct('<4f').unpack_from(filestream.read(16))],
+                                            *[y for y in Struct('<2f').unpack_from(filestream.read(8))])
                     # skip the up/down count
                     filestream.read(4)
                     # append dayline to stock object
