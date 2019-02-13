@@ -75,7 +75,7 @@ func longestValidParentheses(s string) int {
 		}
 	}
 
-	// fmt.Println(arr)
+	fmt.Println(arr)
 
 	return maxcount
 }
