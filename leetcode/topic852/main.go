@@ -39,6 +39,7 @@ func ksimilarity(A string, B string) int {
 }
 
 func main() {
-	fmt.Println(ksimilarity("bccaba", "abacbc"))
+	// fmt.Println(ksimilarity("bccaba", "abacbc"))
+	fmt.Println(ksimilarity("bccaa", "abacc"))
 	// fmt.Println(ksimilarity("aabc", "abca"))
 }
