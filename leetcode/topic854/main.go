@@ -1,6 +1,7 @@
 package main
 
 import (
+	"gotraining-master/topics/go/language/exporting/example1/counters"
 	"fmt"
 	"sort"
 )
@@ -29,13 +30,20 @@ func ksimilarity(A string, B string) int {
 	fConvertToArray(arr1.data, A)
 	fConvertToArray(arr2.data, B)
 
-	sort.Sort(arr1)
-	sort.Sort(arr2)
+	var count
 
-	if arr2.swapcount > arr1.swapcount {
-		return arr2.swapcount - arr1.swapcount
-	}
-	return arr1.swapcount - arr2.swapcount
+	
+
+	return count
+
+	// sort.Sort(arr1)
+	// sort.Sort(arr2)
+
+
+	// if arr2.swapcount > arr1.swapcount {
+	// 	return arr2.swapcount - arr1.swapcount
+	// }
+	// return arr1.swapcount - arr2.swapcount
 }
 
 func main() {
