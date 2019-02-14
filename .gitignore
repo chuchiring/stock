@@ -1,0 +1,15 @@
+**/debug
+**/debug.test
+*.log
+*/.settings/
+*/.DS_Store
+.DS_Store
+*/.idea/
+.idea/
+Thumbs.db
+*.bak
+*.tem
+*.temp
+#.swp
+*.*~
+~*.*
