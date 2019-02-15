@@ -1,49 +1,36 @@
 package main
 
 import (
-	"gotraining-master/topics/go/language/exporting/example1/counters"
 	"fmt"
-	"sort"
 )
 
-type intSlice2 struct {
-	data      []int
-	swapcount int
-}
-
-func (p *intSlice2) Len() int           { return len(p.data) }
-func (p *intSlice2) Less(i, j int) bool { return p.data[i] < p.data[j] }
-func (p *intSlice2) Swap(i, j int) {
-	p.data[i], p.data[j], p.swapcount = p.data[j], p.data[i], p.swapcount+1
-}
-
 func ksimilarity(A string, B string) int {
-	arr1 := &intSlice2{data: make([]int, len(A))}
-	arr2 := &intSlice2{data: make([]int, len(B))}
+	dst := make([]byte, len(A))
+	src := make([]byte, len(dst))
 
-	fConvertToArray := func(arr []int, str string) {
-		for i := range str {
-			arr[i] = int(str[i])
+	arrLen := 0
+	for i := range A {
+		if A[i] != B[i] {
+			dst[arrLen], src[arrLen] = byte(A[i]), byte(B[i])
+			arrLen++
 		}
 	}
 
-	fConvertToArray(arr1.data, A)
-	fConvertToArray(arr2.data, B)
-
-	var count
-
-	
+	var i, count int
+	for i < arrLen {
+		if src[i] != dst[i] {
+			for j := i + 1; j < len(dst); j++ {
+				if dst[j] == src[i] {
+					dst[i], dst[j] = dst[j], dst[i]
+					count++
+					break
+				}
+			}
+		}
+		i++
+	}
 
 	return count
-
-	// sort.Sort(arr1)
-	// sort.Sort(arr2)
-
-
-	// if arr2.swapcount > arr1.swapcount {
-	// 	return arr2.swapcount - arr1.swapcount
-	// }
-	// return arr1.swapcount - arr2.swapcount
 }
 
 func main() {
