@@ -18,9 +18,21 @@ func ksimilarity(A string, B string) int {
 		}
 	}
 
+	fPackArray := func(arr []byte) []byte {
+		// arr1, j := make([]byte, len(arr)), 0
+		// for i := range arr {
+		// 	if arr[i] != 0 {
+		// 		arr1[j] = arr[i]
+		// 		j++
+		// 	}
+		// }
+		// return arr1
+		return arr
+	}
+
 	if debugLog {
-		fmt.Println(src)
-		fmt.Println(dst)
+		fmt.Println(fPackArray(src))
+		fmt.Println(fPackArray(dst))
 		fmt.Println("======================================")
 	}
 
@@ -34,8 +46,8 @@ func ksimilarity(A string, B string) int {
 				if src[j] > 0 && src[j] == vdst && dst[j] == vsrc {
 					src[i], dst[i], src[j], dst[j] = 0, 0, 0, 0
 					if debugLog {
-						fmt.Println(src)
-						fmt.Println(dst)
+						fmt.Println(fPackArray(src))
+						fmt.Println(fPackArray(dst))
 						fmt.Println("----------------")
 					}
 					count++
@@ -76,8 +88,8 @@ func ksimilarity(A string, B string) int {
 
 				src[i], dst[i] = 0, 0
 				if debugLog {
-					fmt.Println(src)
-					fmt.Println(dst)
+					fmt.Println(fPackArray(src))
+					fmt.Println(fPackArray(dst))
 					fmt.Println("----------------")
 				}
 

@@ -2,6 +2,19 @@ package main
 
 import "testing"
 
+/*
+解题思路
+
+1
+找出两个数组中交叉相等的进行交换， 这样一次可以消掉2个
+
+2
+找出两个数组中2次移动可以消掉3个的
+
+3
+最后正常单次每次消掉1个
+*/
+
 func Test_ksimilarity(t *testing.T) {
 	type args struct {
 		A string
