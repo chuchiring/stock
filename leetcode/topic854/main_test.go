@@ -33,6 +33,7 @@ func Test_ksimilarity(t *testing.T) {
 		{"simple2", args{"aabbccddee", "cbeddebaac"}, 6},
 		{"simple2", args{"cdacdfdcacbaedfdaeaf", "afdcacedcdabdeffcaad"}, 10},
 		{"simple2", args{"aaaabbbbccccddddeeee", "aceecdabdcdbebeaadbc"}, 10},
+		{"simple2", args{"abcdefabcdefabcdef", "faebbcddaceeffcbda"}, 10},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
