@@ -66,17 +66,19 @@ func ksimilarity(A string, B string) int {
 			if src[i] > 0 {
 				secondindex, threeindex := -1, -1
 				var vsrc, vdst byte
-				for j := i + 1; j < arrLen; j++ {
-					if src[j] > 0 && (secondindex == -1) && (src[i] == dst[j] || dst[i] == src[j]) {
-						if src[i] == dst[j] {
-							vsrc, vdst = dst[j], src[i]
-						} else {
-							vsrc, vdst = src[i], dst[j]
+				for j := 0; j < arrLen; j++ {
+					if j != i {
+						if src[j] > 0 && (secondindex == -1) && (src[i] == dst[j] || dst[i] == src[j]) {
+							if src[i] == dst[j] {
+								vsrc, vdst = dst[j], src[i]
+							} else {
+								vsrc, vdst = src[i], dst[j]
+							}
+							secondindex = j
+						} else if src[j] > 0 && secondindex > 0 && vsrc == dst[j] && vdst == src[j] {
+							threeindex = j
+							break
 						}
-						secondindex = j
-					} else if src[j] > 0 && secondindex > 0 && vsrc == dst[j] && vdst == src[j] {
-						threeindex = j
-						break
 					}
 				}
 				if secondindex > 0 && threeindex > 0 {
