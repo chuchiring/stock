@@ -39,19 +39,25 @@ func maxPoints(points []Point) int {
 	}
 
 	fCalcMaxLenOfXY := func(arr []int) int {
+		if len(arr) <= 1 {
+			return len(arr)
+		}
 		sort.Ints(arr)
-		maxCount, curCount, num := 0, 0, -1
-		for _, v := range arr {
-			if num != v {
+		maxCount, curCount, num := 1, 1, arr[0]
+		for i := 1; i < len(arr); i++ {
+			if num != arr[i] {
 				if curCount > maxCount {
 					maxCount = curCount
 				}
-				num, curCount = v, 0
+				num, curCount = arr[i], 0
 				continue
 			}
 			curCount++
+			if curCount > maxCount {
+				maxCount = curCount
+			}
 		}
-		return maxCount + 1
+		return maxCount
 	}
 
 	rowMax, colMax := fCalcMaxLenOfXY(xarr), fCalcMaxLenOfXY(yarr)
@@ -64,7 +70,7 @@ func maxPoints(points []Point) int {
 			curLen := 1
 			for j := i + 1; j < len(arr); j++ {
 				//判断是否在直线
-				if arr[j].X-pstart.X == arr[j].Y-pstart.Y {
+				if (arr[j].X-pstart.X == arr[j].Y-pstart.Y) || (arr[j].X == pstart.X && arr[j].Y == pstart.Y) {
 					curLen++
 				}
 			}
@@ -84,7 +90,7 @@ func maxPoints(points []Point) int {
 			curLen := 1
 			for j := i - 1; j >= 0; j-- {
 				//判断是否在直线
-				if arr[j].X-pstart.X == pstart.Y-arr[j].Y {
+				if (arr[j].X-pstart.X == pstart.Y-arr[j].Y) || (arr[j].X == pstart.X && arr[j].Y == pstart.Y) {
 					curLen++
 				}
 			}
@@ -121,7 +127,7 @@ func maxPoints(points []Point) int {
 
 func main() {
 	// points := []point{{1, 1}, {3, 2}, {5, 3}, {4, 1}, {2, 3}, {1, 4}}
-	points := []Point{{2, 3}, {3, 3}, {-5, 3}}
+	points := []Point{{1, 1}, {1, 1}, {2, 3}}
 	fmt.Println("p:", points)
 	fmt.Println("直线最大: ", maxPoints(points))
 }
