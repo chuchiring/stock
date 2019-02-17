@@ -8,7 +8,7 @@ import (
 type (
 	//Point include x, y
 	Point struct {
-		x, y int
+		X, Y int
 	}
 	pointsSorter struct {
 		data []Point
@@ -18,20 +18,24 @@ type (
 func (p *pointsSorter) Len() int      { return len(p.data) }
 func (p *pointsSorter) Swap(i, j int) { p.data[i], p.data[j] = p.data[j], p.data[i] }
 func (p *pointsSorter) Less(i, j int) bool {
-	if p.data[i].x == p.data[j].x {
-		return p.data[i].y < p.data[j].y
+	if p.data[i].X == p.data[j].X {
+		return p.data[i].Y < p.data[j].Y
 	}
-	return p.data[i].x < p.data[j].x
+	return p.data[i].X < p.data[j].X
 }
 
 func maxPoints(points []Point) int {
+	if len(points) <= 1 {
+		return len(points)
+	}
+
 	debuglog := true
 	arr := &pointsSorter{points}
 	sort.Sort(arr)
 
 	xarr, yarr := make([]int, len(points)), make([]int, len(points))
 	for i := range points {
-		xarr[i], yarr[i] = points[i].x, points[i].y
+		xarr[i], yarr[i] = points[i].X, points[i].Y
 	}
 
 	fCalcMaxLenOfXY := func(arr []int) int {
@@ -60,7 +64,7 @@ func maxPoints(points []Point) int {
 			curLen := 1
 			for j := i + 1; j < len(arr); j++ {
 				//判断是否在直线
-				if arr[j].x-pstart.x == arr[j].y-pstart.y {
+				if arr[j].X-pstart.X == arr[j].Y-pstart.Y {
 					curLen++
 				}
 			}
@@ -80,7 +84,7 @@ func maxPoints(points []Point) int {
 			curLen := 1
 			for j := i - 1; j >= 0; j-- {
 				//判断是否在直线
-				if arr[j].x-pstart.x == pstart.y-arr[j].y {
+				if arr[j].X-pstart.X == pstart.Y-arr[j].Y {
 					curLen++
 				}
 			}
@@ -117,7 +121,7 @@ func maxPoints(points []Point) int {
 
 func main() {
 	// points := []point{{1, 1}, {3, 2}, {5, 3}, {4, 1}, {2, 3}, {1, 4}}
-	points := []Point{{1, 1}, {2, 2}, {3, 3}}
+	points := []Point{{2, 3}, {3, 3}, {-5, 3}}
 	fmt.Println("p:", points)
 	fmt.Println("直线最大: ", maxPoints(points))
 }
