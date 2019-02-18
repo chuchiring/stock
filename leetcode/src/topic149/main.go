@@ -24,142 +24,119 @@ func (p *pointsSorter) Less(i, j int) bool {
 	return p.data[i].X < p.data[j].X
 }
 
+func maxInt(first int, param ...int) int {
+	if len(param) == 0 {
+		return first
+	}
+
+	for _, v := range param {
+		if v > first {
+			first = v
+		}
+	}
+	return first
+}
+
+func max2Int(first, second int, param ...int) (int, int) {
+	if len(param) == 0 {
+		return first, second
+	}
+
+	for _, v := range param {
+		if v > first || v > second {
+			if first > second {
+				second = v
+			} else {
+				first = v
+			}
+		}
+	}
+	return first, second
+}
+
 func maxPoints(points []Point) int {
+	// debuglog := true
+
 	if len(points) <= 2 {
 		return len(points)
 	}
 
-	debuglog := true
+	maxLen := 2
+
 	arr := &pointsSorter{points}
 	sort.Sort(arr)
-	max := 2
-	//检查是否有重复项目
-	dupe1, dupe2, dupe := 1, 1, 1
-	for i := 1; i < len(points); i++ {
-		needrecalc := false
-		if points[i].X == points[i-1].X && points[i].Y == points[i-1].Y {
-			dupe++
-		} else {
-			needrecalc = true
-		}
 
-		if dupe > dupe1 || dupe > dupe2 {
-			if dupe2 > dupe1 {
-				dupe1 = dupe
-			} else if dupe > dupe2 {
-				dupe2 = dupe
-			}
-		}
-
-		if needrecalc {
-			dupe = 1
-		}
-
-	}
-
-	if (dupe1 + dupe2) > max {
-		max = dupe1 + dupe2
-	}
-
+	//分离x，y，用于统计x,y总相同数子的最大值，这是十字直线
 	xarr, yarr := make([]int, len(points)), make([]int, len(points))
 	for i := range points {
 		xarr[i], yarr[i] = points[i].X, points[i].Y
 	}
 
-	fCalcMaxLenOfXY := func(arr []int) int {
-		if len(arr) <= 1 {
-			return len(arr)
-		}
-
+	fCalcFlatLen := func(arr []int) int {
 		sort.Ints(arr)
-		maxCount, curCount, num := 1, 1, arr[0]
+		max, cur, num := 1, 1, arr[0]
 		for i := 1; i < len(arr); i++ {
-			if num != arr[i] {
-				if curCount > maxCount {
-					maxCount = curCount
+			if num == arr[i] {
+				cur++
+				if i == len(arr)-1 {
+					max = maxInt(cur, max)
 				}
-				num, curCount = arr[i], 0
-				continue
-			}
-			curCount++
-			if curCount > maxCount {
-				maxCount = curCount
+			} else {
+				num = arr[i]
+				max = maxInt(cur, max)
+				cur = 1
 			}
 		}
-		return maxCount
+		return max
 	}
 
-	rowMax, colMax := fCalcMaxLenOfXY(xarr), fCalcMaxLenOfXY(yarr)
-
-	//计算斜线
+	//计算正斜线和反斜线
 	fXX := func(arr []Point, mode int) int {
-		maxcount := 2
+		max := 2
 		for i := range arr {
-			pstart := arr[i]
-			curLen := 1
+			srcP, nlen := arr[i], 1
 			for j := i + 1; j < len(arr); j++ {
-				//判断是否在直线
-				if (arr[j].X-pstart.X == arr[j].Y-pstart.Y) || (arr[j].X == pstart.X && arr[j].Y == pstart.Y) {
-					curLen++
+				switch mode {
+				case 1:
+					if srcP.X-arr[j].X == srcP.Y-arr[j].Y {
+						nlen++
+					}
+				case -1:
+					if srcP.X-arr[j].X == arr[j].Y-srcP.Y {
+						nlen++
+					}
 				}
 			}
-			if curLen > maxcount {
-				maxcount = curLen
-			}
+			max = maxInt(max, nlen)
 		}
-		return maxcount
+		return max
 	}
 
-	zxMax := fXX(points, 1)
-
-	fFX := func(arr []Point, mode int) int {
-		maxcount := 2
-		for i := len(arr) - 1; i >= 0; i-- {
-			pstart := arr[i]
-			curLen := 1
-			for j := i - 1; j >= 0; j-- {
-				//判断是否在直线
-				if (arr[j].X-pstart.X == pstart.Y-arr[j].Y) || (arr[j].X == pstart.X && arr[j].Y == pstart.Y) {
-					curLen++
+	//计算相同点
+	fSamePoints := func(arr []Point) int {
+		dupe1, dupe2, cur, p := 1, 1, 1, arr[0]
+		for i := 1; i < len(arr); i++ {
+			if p.X == arr[i].X && p.Y == arr[i].Y {
+				cur++
+				if i == len(arr)-1 {
+					dupe1, dupe2 = max2Int(dupe1, dupe2, cur)
 				}
-			}
-			if curLen > maxcount {
-				maxcount = curLen
+			} else {
+				p = arr[i]
+				dupe1, dupe2 = max2Int(dupe1, dupe2, cur)
+				cur = 1
 			}
 		}
-		return maxcount
+		return dupe1 + dupe2
 	}
 
-	fxMax := fFX(points, 1)
-
-	if debuglog {
-		fmt.Println("a:", *arr)
-		fmt.Println("y:", yarr)
-		fmt.Println("x:", xarr)
-		fmt.Printf("列直线: %d, 行直线: %d, 正斜: %d, 反斜: %d\n", rowMax, colMax, zxMax, fxMax)
-	}
-
-	if colMax > max {
-		max = colMax
-	}
-
-	if rowMax > max {
-		max = rowMax
-	}
-
-	if zxMax > max {
-		max = zxMax
-	}
-
-	if fxMax > max {
-		max = fxMax
-	}
-	return max
+	return maxInt(maxLen, fCalcFlatLen(xarr), fCalcFlatLen(yarr),
+		fXX(points, 1), fXX(points, -1), fSamePoints(points))
 }
 
 func main() {
 	// points := []point{{1, 1}, {3, 2}, {5, 3}, {4, 1}, {2, 3}, {1, 4}}
-	points := []Point{{1, 1}, {1, 1}, {2, 3}}
+	points := []Point{{1, 1}, {1, 1}, {1, 1}}
 	fmt.Println("p:", points)
 	fmt.Println("直线最大: ", maxPoints(points))
 }
