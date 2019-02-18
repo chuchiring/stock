@@ -25,13 +25,41 @@ func (p *pointsSorter) Less(i, j int) bool {
 }
 
 func maxPoints(points []Point) int {
-	if len(points) <= 1 {
+	if len(points) <= 2 {
 		return len(points)
 	}
 
 	debuglog := true
 	arr := &pointsSorter{points}
 	sort.Sort(arr)
+	max := 2
+	//检查是否有重复项目
+	dupe1, dupe2, dupe := 1, 1, 1
+	for i := 1; i < len(points); i++ {
+		needrecalc := false
+		if points[i].X == points[i-1].X && points[i].Y == points[i-1].Y {
+			dupe++
+		} else {
+			needrecalc = true
+		}
+
+		if dupe > dupe1 || dupe > dupe2 {
+			if dupe2 > dupe1 {
+				dupe1 = dupe
+			} else if dupe > dupe2 {
+				dupe2 = dupe
+			}
+		}
+
+		if needrecalc {
+			dupe = 1
+		}
+
+	}
+
+	if (dupe1 + dupe2) > max {
+		max = dupe1 + dupe2
+	}
 
 	xarr, yarr := make([]int, len(points)), make([]int, len(points))
 	for i := range points {
@@ -42,6 +70,7 @@ func maxPoints(points []Point) int {
 		if len(arr) <= 1 {
 			return len(arr)
 		}
+
 		sort.Ints(arr)
 		maxCount, curCount, num := 1, 1, arr[0]
 		for i := 1; i < len(arr); i++ {
@@ -110,7 +139,10 @@ func maxPoints(points []Point) int {
 		fmt.Printf("列直线: %d, 行直线: %d, 正斜: %d, 反斜: %d\n", rowMax, colMax, zxMax, fxMax)
 	}
 
-	max := colMax
+	if colMax > max {
+		max = colMax
+	}
+
 	if rowMax > max {
 		max = rowMax
 	}
