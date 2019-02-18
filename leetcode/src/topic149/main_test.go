@@ -15,7 +15,7 @@ func Test_maxPoints(t *testing.T) {
 		{"simple2", args{[]Point{{2, 3}, {3, 3}, {-5, 3}}}, 3},
 		{"simple3", args{[]Point{{1, 1}, {1, 1}, {2, 3}}}, 3},
 		{"simple4", args{[]Point{{3, 10}, {0, 2}, {0, 2}, {3, 10}}}, 4},
-		{"simple3", args{[]Point{{1, 1}, {1, 1}, {1, 1}}}, 3},
+		{"simple3", args{[]Point{{3, 1}, {12, 3}, {3, 1}, {-6, -1}}}, 4},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

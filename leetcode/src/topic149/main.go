@@ -127,6 +127,9 @@ func maxPoints(points []Point) int {
 				cur = 1
 			}
 		}
+		if (dupe1 + dupe2) > len(arr) {
+			return len(arr)
+		}
 		return dupe1 + dupe2
 	}
 
