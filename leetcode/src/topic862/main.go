@@ -1,6 +1,51 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+	"math/rand"
+	"time"
+)
+
+func doRandomTest(count int) {
+	j := 0
+	for j <= count {
+		rand.Seed(time.Now().UTC().UnixNano())
+		arrlen := rand.Intn(20)
+		arr := make([]int, arrlen)
+		for i := 0; i < arrlen; i++ {
+			arr[i] = rand.Intn(60) - rand.Intn(60) + rand.Intn(60) - rand.Intn(60)
+		}
+
+		k := rand.Intn(100)
+		fmt.Println(arr, k)
+
+		v := shortestSubarray(arr, k)
+
+		if vok := shortestSubarraySlow(arr, k); vok != v {
+			fmt.Printf("Error, should be %d, but got %d\n", vok, v)
+
+			s := ""
+			for _, v := range arr {
+				s = s + fmt.Sprintf(", %d", v)
+			}
+			if len(s) > 0 {
+				s = s[2:]
+			}
+			s = fmt.Sprintf("[]int{%s}, %d", s, k)
+			fmt.Printf("shortestSubarray(%s)\n", s)
+			fmt.Printf("{\"k8\", args{%s}, %d},\n", s, vok)
+			//{"s8", args{[]int{1, -1, -1, -1, -1}, 1}, 1},
+			log.Fatal("")
+		} else {
+			fmt.Printf("Success, result is %d\n", v)
+		}
+
+		j++
+
+		time.Sleep(time.Millisecond * 50)
+	}
+}
 
 func shortestSubarraySlow(A []int, K int) int {
 	if len(A) == 0 {
@@ -47,26 +92,16 @@ func shortestSubarray(A []int, K int) int {
 		found := false
 
 		num := 0
-		fakeK := K
 		for i := 0; i+mid < arrLen; i++ {
 			if i == 0 {
 				for j := i; j <= i+mid; j++ {
 					num = num + A[j]
-					if A[j] < 0 {
-						fakeK = fakeK + A[j]
-					}
 				}
 			} else {
 				num = num - A[i-1] + A[i+mid]
-				if A[i-1] < 0 {
-					fakeK = fakeK - A[i-1]
-				}
-				if A[i+mid] < 0 {
-					fakeK = fakeK + A[i+mid]
-				}
 			}
 
-			if num >= fakeK {
+			if num >= K {
 				found = true
 				lastFoundIndex = mid + 1
 				break
@@ -84,7 +119,9 @@ func shortestSubarray(A []int, K int) int {
 }
 
 func main() {
-	v := shortestSubarray([]int{27, 20, 79, 87, -36, 78, 76, 72, 50, -26}, 453)
-
+	// v := shortestSubarray([]int{27, 20, 79, 87, -36, 78, 76, 72, 50, -26}, 453)
+	// fmt.Println(v)
+	// doRandomTest(1000)
+	v := shortestSubarray([]int{13, -15, -16, -22}, 11)
 	fmt.Println(v)
 }
