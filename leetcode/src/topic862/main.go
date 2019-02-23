@@ -11,7 +11,7 @@ func doRandomTest(count int) {
 	j := 0
 	for j <= count {
 		rand.Seed(time.Now().UTC().UnixNano())
-		arrlen := rand.Intn(20)
+		arrlen := rand.Intn(20) + 1
 		arr := make([]int, arrlen)
 		for i := 0; i < arrlen; i++ {
 			arr[i] = rand.Intn(60) - rand.Intn(60) + rand.Intn(60) - rand.Intn(60)
@@ -87,18 +87,25 @@ func shortestSubarray(A []int, K int) int {
 	lastFoundIndex := -1
 	low, high, arrLen := 0, len(A)-1, len(A)
 
+	lastIndex, lastValue := -1, -1
+
 	for low <= high {
 		mid := (low + high) >> 1
 		found := false
 
 		num := 0
+		max := 0
 		for i := 0; i+mid < arrLen; i++ {
 			if i == 0 {
 				for j := i; j <= i+mid; j++ {
 					num = num + A[j]
 				}
+				max = num
 			} else {
 				num = num - A[i-1] + A[i+mid]
+				if num > max {
+					max = num
+				}
 			}
 
 			if num >= K {
@@ -110,7 +117,20 @@ func shortestSubarray(A []int, K int) int {
 
 		if found {
 			high = mid - 1
+			lastIndex, lastValue = -1, -1
 		} else {
+			if lastIndex == -1 {
+				lastIndex, lastValue = mid, max
+			} else {
+				if max <= lastValue && mid > lastIndex {
+					high = lastIndex
+					low = 0
+					continue
+				}
+
+				lastIndex, lastValue = mid, max
+			}
+
 			low = mid + 1
 		}
 	}
@@ -122,6 +142,6 @@ func main() {
 	// v := shortestSubarray([]int{27, 20, 79, 87, -36, 78, 76, 72, 50, -26}, 453)
 	// fmt.Println(v)
 	// doRandomTest(1000)
-	v := shortestSubarray([]int{13, -15, -16, -22}, 11)
+	v := shortestSubarray([]int{1, -1, -1, -1, -1}, 1)
 	fmt.Println(v)
 }
