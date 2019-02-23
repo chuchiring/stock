@@ -22,6 +22,8 @@ func Test_shortestSubarray(t *testing.T) {
 		{"s7", args{[]int{27, 20, 79, 87, -36, 78, 76, 72, 50, -26}, 453}, 9},
 		{"s8", args{[]int{1, -1, -1, -1, -1}, 1}, 1},
 		{"k8", args{[]int{58, 6, -14, 3, -14, 3, -11, 13, 22}, 55}, 1},
+		{"k81", args{[]int{75, -38, -8, 24, 23}, 54}, 1},
+		{"k82", args{[]int{31, 28, -38, 53, 27, 44, -76, 31}, 95}, 3},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
