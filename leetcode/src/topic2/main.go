@@ -33,52 +33,54 @@ func printList(node *ListNode) []int {
 
 func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 
-	root := &ListNode{}
-	node := root
-
-	for {
-		var vup int
-		if l1 != nil && l2 != nil {
-			v := l1.Val + l2.Val + node.Val
-			vup = v / 10
-			v = v % 10
-
-			node.Val = v
-		} else if l1 != nil {
-			v := node.Val + l1.Val
-			vup = v / 10
-			v = v % 10
-			node.Val = v
-		} else if l2 != nil {
-			v := node.Val + l2.Val
-			vup = v / 10
-			v = v % 10
-			node.Val = v
+	fCalcLen := func(root *ListNode) int {
+		count := 0
+		for root != nil {
+			root = root.Next
+			count++
 		}
-
-		if l1 != nil {
-			l1 = l1.Next
-		}
-		if l2 != nil {
-			l2 = l2.Next
-		}
-
-		if l1 == nil && l2 == nil && vup == 0 {
-			break
-		}
-
-		node.Next = &ListNode{Val: vup}
-		node = node.Next
+		return count
 	}
 
-	return root
+	var long, short, longroot *ListNode
+	if fCalcLen(l1) > fCalcLen(l2) {
+		long, short, longroot = l1, l2, l1
+	} else {
+		long, short, longroot = l2, l1, l2
+	}
+
+	vup := 0
+	for short != nil {
+		v := long.Val + short.Val + vup
+		vup = v / 10
+		long.Val = v % 10
+
+		short = short.Next
+		if long.Next == nil && vup > 0 {
+			long.Next = &ListNode{}
+		}
+		long = long.Next
+	}
+
+	for vup > 0 {
+		v := long.Val + vup
+		vup = v / 10
+		long.Val = v % 10
+
+		if vup > 0 && long.Next == nil {
+			long.Next = &ListNode{}
+		}
+		long = long.Next
+	}
+
+	return longroot
 }
 
 func main() {
 	// result: [6,6,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
 	// v1 := []int{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}
-	v1 := []int{1}
-	v2 := []int{9, 9}
+	v1 := []int{2}
+	v2 := []int{8, 9, 9}
 	nodes := addTwoNumbers(createList(v1), createList(v2))
 	fmt.Println(printList(nodes))
 }
