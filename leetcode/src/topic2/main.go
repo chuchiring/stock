@@ -65,7 +65,8 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 }
 
 func main() {
-	v1 := []int{2, 4, 3}
+	//result: [6,6,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+	v1 := []int{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}
 	v2 := []int{5, 6, 4}
 	nodes := addTwoNumbers(createList(v1), createList(v2))
 	fmt.Println(printList(nodes))
