@@ -1,24 +1,21 @@
 package main
 
 import (
+	"container/list"
 	"log"
 )
 
-var curTime int
-
 type item struct {
-	key, value int
-	lastAccess int
+	value   int
+	element *list.Element
 }
 
 //LRUCache 1
 type LRUCache struct {
 	capacity int
 	count    int
-
-	internalTime int
-
-	items []item
+	items    map[int]*item
+	queue    *list.List
 }
 
 //Constructor 1
@@ -28,87 +25,47 @@ func Constructor(capacity int) LRUCache {
 
 //Get 1
 func (cache *LRUCache) Get(key int) int {
-	if len(cache.items) == 0 {
+	if cache.items == nil {
 		return -1
 	}
 
-	for i, item := range cache.items {
-		if item.key == key && item.value != -1 {
-			// cache.items[i].readCount++
-			cache.items[i].lastAccess = cache.internalTime
-			cache.internalTime++
-			return item.value
-		}
+	if v, ok := cache.items[key]; ok {
+		cache.queue.Remove(v.element)
+		v.element = cache.queue.PushBack(key)
+		return v.value
 	}
-
 	return -1
 }
 
 //Put 1
 func (cache *LRUCache) Put(key int, value int) {
-	//init
+
 	if (cache.items) == nil {
-		cache.items = make([]item, cache.capacity)
-		for i := 0; i < cache.capacity; i++ {
-			cache.items[i].value = -1
-		}
+		cache.items = make(map[int]*item)
+		cache.queue = list.New()
 	}
 
-	//put
-	emptyindex := -1
-	foundindex := -1
-
-	lessReadIndex := -1
-	lastAccessTime := cache.internalTime
-
-	for i, item := range cache.items {
-
-		//empty
-		if emptyindex == -1 && item.value == -1 {
-			emptyindex = i
-			break
-		}
-
-		//foundindex
-		if foundindex == -1 && item.key == key {
-			foundindex = i
-		}
-
-		//lessusecount
-		if item.value != -1 {
-			if item.lastAccess < lastAccessTime {
-				lessReadIndex = i
-				lastAccessTime = item.lastAccess
-			}
-		}
-	}
-
-	if foundindex != -1 {
-		cache.items[foundindex].value = value
-		cache.items[foundindex].lastAccess = cache.internalTime
-		cache.internalTime++
-		// fmt.Println(cache.items)
-		return
-	}
-
-	if emptyindex != -1 {
-		cache.items[emptyindex].key = key
-		cache.items[emptyindex].value = value
-		cache.items[emptyindex].lastAccess = cache.internalTime
-		cache.internalTime++
-		// fmt.Println(cache.items)
-		return
-	}
-
-	if lessReadIndex != -1 {
-		cache.items[lessReadIndex].key = key
-		cache.items[lessReadIndex].value = value
-		cache.items[lessReadIndex].lastAccess = cache.internalTime
-		cache.internalTime++
-		// fmt.Println(cache.items)
+	if v, ok := cache.items[key]; ok {
+		v.value = value
+		cache.queue.Remove(v.element)
+		v.element = cache.queue.PushBack(key)
 	} else {
-		log.Fatal("it is error")
+		if cache.count == cache.capacity {
+			element := cache.queue.Front()
+			delete(cache.items, element.Value.(int))
+			cache.queue.Remove(element)
+
+			v := &item{value: value}
+			cache.items[key] = v
+			v.element = cache.queue.PushBack(key)
+		} else {
+			v := &item{value: value}
+			cache.items[key] = v
+			v.element = cache.queue.PushBack(key)
+			cache.count++
+		}
 	}
+
 }
 
 func main() {
