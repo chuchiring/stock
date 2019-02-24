@@ -1,13 +1,14 @@
 package main
 
+//MyCircularQueue 1
 type MyCircularQueue struct {
 	capacity int
 	queue    []int
 }
 
-/** Initialize your data structure here. Set the size of the queue to be k. */
+//MyCircularQueue
 func Constructor(k int) MyCircularQueue {
-	return MyCircularQueue{capacity: k}
+	return MyCircularQueue{capacity: k, queue: make([]int, 0, k*2)}
 }
 
 /** Insert an element into the circular queue. Return true if the operation is successful. */
@@ -50,18 +51,11 @@ func (this *MyCircularQueue) IsEmpty() bool {
 	return len(this.queue) == 0
 }
 
-/** Checks whether the circular queue is full or not. */
+//IsFull 1
 func (this *MyCircularQueue) IsFull() bool {
 	return len(this.queue) == this.capacity
 }
 
-/**
- * Your MyCircularQueue object will be instantiated and called as such:
- * obj := Constructor(k);
- * param_1 := obj.EnQueue(value);
- * param_2 := obj.DeQueue();
- * param_3 := obj.Front();
- * param_4 := obj.Rear();
- * param_5 := obj.IsEmpty();
- * param_6 := obj.IsFull();
- */
+func main() {
+
+}
