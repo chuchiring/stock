@@ -6,8 +6,8 @@ type ListNode struct {
 	Next *ListNode
 }
 
-//IntArrayToSingeLinkList change int array to a listnode list with int value
-func IntArrayToSingeLinkList(arr []int) *ListNode {
+//IntsToList change int array to a listnode list with int value
+func IntsToList(arr []int) *ListNode {
 	nlen := len(arr)
 	if nlen == 0 {
 		return nil
@@ -25,8 +25,8 @@ func IntArrayToSingeLinkList(arr []int) *ListNode {
 	return root
 }
 
-//SingleLinkListToIntArray 1
-func SingleLinkListToIntArray(arr *ListNode) []int {
+//ListToInts 1
+func ListToInts(arr *ListNode) []int {
 	var result []int
 
 	node := arr
