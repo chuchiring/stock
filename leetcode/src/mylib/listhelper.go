@@ -1,5 +1,19 @@
 package main
 
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
 //ListNode single link node
 type ListNode struct {
 	Val  int
