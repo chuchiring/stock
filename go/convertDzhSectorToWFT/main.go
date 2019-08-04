@@ -2,11 +2,20 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
 )
+
+type config struct {
+	SrcDir string
+	DesDir string
+	Files  []string
+}
 
 func convertDzhSectorToWFT(srcFile, desDir string) {
 	//Open the DZH sector file
@@ -21,6 +30,7 @@ func convertDzhSectorToWFT(srcFile, desDir string) {
 	_, fileName := filepath.Split(srcFile)
 	fileExt := filepath.Ext(fileName)
 	fileNameNew := strings.TrimSuffix(fileName, fileExt) + ".txt"
+
 	//create des file
 	desFile, err := os.Create(filepath.Join(desDir, fileNameNew))
 	if err != nil {
@@ -29,9 +39,8 @@ func convertDzhSectorToWFT(srcFile, desDir string) {
 	}
 	defer desFile.Close()
 
-	//create a reader buffer
+	//create a reader buffer & skip file head
 	reader := bufio.NewReader(file)
-	//skip file head
 	reader.Discard(4)
 
 	//make a buffer for stock code, every stock length is 12 byte
@@ -56,8 +65,15 @@ func convertDzhSectorToWFT(srcFile, desDir string) {
 }
 
 func main() {
-	convertDzhSectorToWFT("c:\\DZH2\\USERDATA\\block\\A多头.blk", "r:\\")
-	convertDzhSectorToWFT("c:\\DZH2\\USERDATA\\block\\A间距.blk", "r:\\")
-	convertDzhSectorToWFT("c:\\DZH2\\USERDATA\\block\\A剑来.blk", "r:\\")
-	convertDzhSectorToWFT("c:\\DZH2\\USERDATA\\block\\A周线放量.blk", "r:\\")
+	stream, err := ioutil.ReadFile("convertDzhSectorToWFT.json")
+	if err != nil {
+		log.Fatal("can't open config file")
+	}
+
+	cfg := &config{}
+	json.Unmarshal(stream, cfg)
+
+	for _, n := range cfg.Files {
+		convertDzhSectorToWFT(filepath.Join(cfg.SrcDir, n), cfg.DesDir)
+	}
 }
